@@ -8,10 +8,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class MainController {
+
     @Autowired
     private ProductService productService;
 
@@ -27,6 +29,7 @@ public class MainController {
     public String addProductPost(@ModelAttribute ProductDto productDto) {
         productService.addProduct(productDto);
         System.out.println(productDto);
+
         return "addProduct";
     }
 }
