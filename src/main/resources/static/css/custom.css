@@ -1,0 +1,9 @@
+.button-register{
+    border-radius: 15px ;
+    display: inline-block;
+    cursor: pointer;
+
+}
+.center{
+    margin: 0 auto;
+}
