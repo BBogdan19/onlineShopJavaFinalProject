@@ -10,6 +10,7 @@ import lombok.ToString;
 @ToString
 
 public class ProductDto {
+    private String id;
     private String name;
     private String price;
     private String category;
@@ -17,4 +18,5 @@ public class ProductDto {
     private String description;
     @ToString.Exclude
     private String image;
+
 }
