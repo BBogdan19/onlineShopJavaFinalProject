@@ -2,7 +2,9 @@ package com.sda.OnlineShop.controller;
 
 import com.sda.OnlineShop.dto.ProductDto;
 
+import com.sda.OnlineShop.dto.RegistrationDto;
 import com.sda.OnlineShop.services.ProductService;
+import com.sda.OnlineShop.services.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,8 @@ public class MainController {
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private RegistrationService registrationService;
 
     @GetMapping("/addProduct")
     public String addProductGet(Model model) {
@@ -45,13 +49,32 @@ public class MainController {
 
     @GetMapping("/product/{productId}")
     public String viewProductGet(@PathVariable(value = "productId") String productId, Model model) {
-      Optional <ProductDto> optionalProductDto = productService.getOptionalProductDtoById(productId);
-      if(optionalProductDto.isEmpty()){
-          return "error";
-      }
-        model.addAttribute("productDto",optionalProductDto.get());
+        Optional<ProductDto> optionalProductDto = productService.getOptionalProductDtoById(productId);
+        if (optionalProductDto.isEmpty()) {
+            return "error";
+        }
+        model.addAttribute("productDto", optionalProductDto.get());
         return "viewProduct";
     }
 
+    @GetMapping("/registration")
+    public String viewRegistrationGet(Model model) {
+        RegistrationDto registrationDto = new RegistrationDto();
+        model.addAttribute("registrationDto", registrationDto);
+        return "registration";
+    }
+
+    @PostMapping ("/registration")
+    public String viewRegistrationPost(@ModelAttribute RegistrationDto registrationDto) {
+
+        registrationService.addRegistration(registrationDto);
+        System.out.println("datele de inregistrare  " + registrationDto);
+        return "registration";
+    }
+
+    @GetMapping("/logIn")
+    public String viewLogInGet() {
+        return "logIn";
+    }
 
 }
