@@ -18,6 +18,7 @@
 
 </head>
 <body>
+<div th:insert="fragments/menu :: menu" ></div>
 <!--================Login Box Area =================-->
 <section class="login_box_area section-margin">
     <div class="container">
@@ -34,7 +35,7 @@
             <div class="col-lg-6">
                 <div class="login_form_inner">
                     <h3>Log in to enter</h3>
-                    <form class="row login_form" action="/login" method="post" id="contactForm" >
+                    <form class="row login_form" action="/logIn" method="post" id="contactForm" >
                         <div class="col-md-12 form-group">
                             <input type="text" class="form-control" id="email" name="username" placeholder="Username" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'">
                         </div>
