@@ -38,30 +38,37 @@
                             <input th:field="*{name}" type="text" class="form-control" id="productName"
                                    name="productName" placeholder="Product Name" onfocus="this.placeholder = ''"
                                    onblur="this.placeholder = 'Product name'">
+                            <p th:each="error : ${#fields.errors('name')}" th:text="${error}"></p>
                         </div>
                         <div class="col-md-12 form-group">
                             <input th:field="*{price}" type="text" class="form-control" id="price" name="price"
                                    placeholder="Price" onfocus="this.placeholder = ''"
                                    onblur="this.placeholder = 'Price'">
+                            <p th:each="error : ${#fields.errors('price')}" th:text="${error}"></p>
                         </div>
                         <div class="col-md-12 form-group">
-                            <input th:field="*{category}" type="text" class="form-control" id="category" name="category"
-                                   placeholder="Category" onfocus="this.placeholder = ''"
-                                   onblur="this.placeholder = 'Category'">
+                            <select th:field="*{category}" class="form-control" id="category" name="Category">
+                                <option th:value="AUTO_SECOND" th:text="Second" ></option>
+                                <option th:value="AUTO_NEW" th:text="New" ></option>
+                                <option th:value="AUTO_PARTS" th:text="Parts" ></option>
+                            </select>
                         </div>
                         <div class="col-md-12 form-group">
                             <input th:field="*{quantity}" type="text" class="form-control" id="quantity" name="quantity"
                                    placeholder="Quantity" onfocus="this.placeholder = ''"
                                    onblur="this.placeholder = 'Quantity'">
+                            <p th:each="error : ${#fields.errors('quantity')}" th:text="${error}"></p>
                         </div>
                         <div class="col-md-12 form-group">
                             <input th:field="*{description}" type="textarea" class="form-control" id="description"
                                    name="description" placeholder="Description" onfocus="this.placeholder = ''"
                                    onblur="this.placeholder = 'Description'">
+                            <p th:each="error : ${#fields.errors('description')}" th:text="${error}"></p>
 
                         </div>
                         <div class="col-md-12 form-group">
                             <input type="file" class="form-control" id="productImage" name="productImage">
+                            <p th:each="error : ${#fields.errors('image')}" th:text="${error}"></p>
                         </div>
 
                         <div class="col-md-12 form-group">

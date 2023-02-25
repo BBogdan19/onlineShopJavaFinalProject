@@ -17,9 +17,26 @@ public class RegistrationDtoValidator {
 
     public void validate(RegistrationDto registrationDto, BindingResult bindingResult) {
         Optional<User> optionalUser = userRepository.findByEmail(registrationDto.getEmail());
-        if (optionalUser.isPresent()){
-            FieldError fieldError= new FieldError("registrationDto","email"," The email is already in use!");
+        if (optionalUser.isPresent()) {
+            FieldError fieldError = new FieldError("registrationDto", "email", " The email is already in use!");
+            bindingResult.addError(fieldError);
+
+        }
+        if (registrationDto.getEmail().length() == 0) {
+            FieldError fieldError = new FieldError("registrationDto", "email", " The email is empty!");
             bindingResult.addError(fieldError);
         }
+
+            if (registrationDto.getPassword().length() == 0) {
+                FieldError fieldError = new FieldError("registrationDto", "password", " The password is empty!");
+                bindingResult.addError(fieldError);
+
+            }
+            if (registrationDto.getPassword().equals(registrationDto.getConfirmPassword())!=true) {
+                FieldError fieldError = new FieldError("registrationDto", "confirmPassword", " The Confirm Password is different!");
+                bindingResult.addError(fieldError);
+            }
+
+
     }
 }

@@ -6,6 +6,7 @@ import com.sda.OnlineShop.dto.RegistrationDto;
 import com.sda.OnlineShop.dto.SelectedProductDto;
 import com.sda.OnlineShop.services.ProductService;
 import com.sda.OnlineShop.services.RegistrationService;
+import com.sda.OnlineShop.validators.ProductDtoValidator;
 import com.sda.OnlineShop.validators.RegistrationDtoValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +28,8 @@ public class MainController {
     private RegistrationService registrationService;
     @Autowired
     private RegistrationDtoValidator registrationDtoValidator;
+    @Autowired
+    private ProductDtoValidator productDtoValidator;
 
     @GetMapping("/addProduct")
     public String addProductGet(Model model) {
@@ -38,9 +41,14 @@ public class MainController {
 
     @PostMapping("/addProduct")
     public String addProductPost(@ModelAttribute ProductDto productDto,
-                                 @RequestParam("productImage") MultipartFile productImage) {
+                                 @RequestParam("productImage") MultipartFile productImage,
+                                 BindingResult bindingResult) {
+        productDtoValidator.validate(productDto, bindingResult, productImage);
+        if (bindingResult.hasErrors()) {
+            return "addProduct";
+        }
+
         productService.addProduct(productDto, productImage);
-        System.out.println(productDto);
 
         return "addProduct";
     }
@@ -60,8 +68,8 @@ public class MainController {
         }
         model.addAttribute("productDto", optionalProductDto.get());
 
-        SelectedProductDto selectedProductDto= new SelectedProductDto();
-        model.addAttribute("selectedProductDto",selectedProductDto);
+        SelectedProductDto selectedProductDto = new SelectedProductDto();
+        model.addAttribute("selectedProductDto", selectedProductDto);
 
         return "viewProduct";
     }
