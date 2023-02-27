@@ -6,9 +6,12 @@ import com.sda.OnlineShop.dto.RegistrationDto;
 import com.sda.OnlineShop.dto.SelectedProductDto;
 import com.sda.OnlineShop.services.ProductService;
 import com.sda.OnlineShop.services.RegistrationService;
+import com.sda.OnlineShop.services.ShoppingCartService;
 import com.sda.OnlineShop.validators.ProductDtoValidator;
 import com.sda.OnlineShop.validators.RegistrationDtoValidator;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+
+
 
 @Controller
 public class MainController {
@@ -30,7 +35,9 @@ public class MainController {
     private RegistrationDtoValidator registrationDtoValidator;
     @Autowired
     private ProductDtoValidator productDtoValidator;
-
+    @Autowired
+    private ShoppingCartService shoppingCarService;
+    
     @GetMapping("/addProduct")
     public String addProductGet(Model model) {
         ProductDto productDto = new ProductDto();
@@ -73,6 +80,16 @@ public class MainController {
 
         return "viewProduct";
     }
+    @PostMapping("/product/{productId}")
+    public String viewProductPost(@ModelAttribute SelectedProductDto selectedProductDto,
+                                  @PathVariable(value = "productId")String productId,
+                                    Authentication authentication){
+        System.out.println(selectedProductDto);
+        System.out.println(authentication.getName());
+        shoppingCarService.addToCart(selectedProductDto,productId, authentication.getName());
+        return "redirect:/product/"+ productId;
+
+    }
 
     @GetMapping("/registration")
     public String viewRegistrationGet(Model model) {
@@ -97,6 +114,16 @@ public class MainController {
     @GetMapping("/logIn")
     public String viewLogInGet() {
         return "logIn";
+    }
+
+    @GetMapping("/login")
+    public String viewLoginGet(){return "login";}
+
+    @GetMapping("/checkout")
+    public String viewCheckoutGet(Authentication authentication,Model model){
+        shoppingCarService.getShoppingCarDto(authentication.getName());
+        model.addAttribute("shoppingCartDto", shoppingCartDto);
+        return "checkout";
     }
 
 }
