@@ -25,7 +25,10 @@ public class UserMapper {
         user.setPassword(bCryptPasswordEncoder.encode(registrationDto.getPassword()));
         user.setPhoneNumber(registrationDto.getPhoneNumber());
         user.setUserRole(UserRole.valueOf(registrationDto.getUserRole()));
+
         ShoppingCart shoppingCart= new ShoppingCart();
+
+
         shoppingCart.setUser(user);
         user.setShoppingCart(shoppingCart);
         return user;

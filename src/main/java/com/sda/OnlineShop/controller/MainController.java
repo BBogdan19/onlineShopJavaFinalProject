@@ -4,12 +4,17 @@ import com.sda.OnlineShop.dto.ProductDto;
 
 import com.sda.OnlineShop.dto.RegistrationDto;
 import com.sda.OnlineShop.dto.SelectedProductDto;
+
 import com.sda.OnlineShop.dto.ShoppingCartDto;
 import com.sda.OnlineShop.entities.User;
 import com.sda.OnlineShop.repository.ShoppingCartRepository;
 import com.sda.OnlineShop.services.*;
+
+
+
 import com.sda.OnlineShop.validators.ProductDtoValidator;
 import com.sda.OnlineShop.validators.RegistrationDtoValidator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -24,6 +29,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+
+
 @Controller
 public class MainController {
 
@@ -36,6 +43,7 @@ public class MainController {
     @Autowired
     private ProductDtoValidator productDtoValidator;
     @Autowired
+
     private ShoppingCartService shoppingCartService;
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
@@ -44,6 +52,9 @@ public class MainController {
     @Autowired
     private UserDetailsServiceImp userDetailsService;
 
+
+
+    
 
     @GetMapping("/addProduct")
     public String addProductGet(Model model) {
@@ -84,6 +95,16 @@ public class MainController {
         model.addAttribute("selectedProductDto", selectedProductDto);
 
         return "viewProduct";
+    }
+    @PostMapping("/product/{productId}")
+    public String viewProductPost(@ModelAttribute SelectedProductDto selectedProductDto,
+                                  @PathVariable(value = "productId")String productId,
+                                    Authentication authentication){
+        System.out.println(selectedProductDto);
+        System.out.println(authentication.getName());
+        shoppingCarService.addToCart(selectedProductDto,productId, authentication.getName());
+        return "redirect:/product/"+ productId;
+
     }
 
     @PostMapping("/product/{name}/{productId}")
@@ -129,6 +150,7 @@ public class MainController {
         return "checkout";
     }
 
+
     @PostMapping("/confirmation")
     public String launchOrderPost(Authentication authentication, Model model) {
 
@@ -145,6 +167,11 @@ public class MainController {
         model.addAttribute("now", now);
         return "confirmation";
     }
+
+
+
+ 
+
 
 
 }
