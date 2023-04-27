@@ -4,9 +4,14 @@ import com.sda.OnlineShop.dto.ProductDto;
 
 import com.sda.OnlineShop.dto.RegistrationDto;
 import com.sda.OnlineShop.dto.SelectedProductDto;
-import com.sda.OnlineShop.services.ProductService;
-import com.sda.OnlineShop.services.RegistrationService;
-import com.sda.OnlineShop.services.ShoppingCartService;
+
+import com.sda.OnlineShop.dto.ShoppingCartDto;
+import com.sda.OnlineShop.entities.User;
+import com.sda.OnlineShop.repository.ShoppingCartRepository;
+import com.sda.OnlineShop.services.*;
+
+
+
 import com.sda.OnlineShop.validators.ProductDtoValidator;
 import com.sda.OnlineShop.validators.RegistrationDtoValidator;
 
@@ -19,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,39 +43,48 @@ public class MainController {
     @Autowired
     private ProductDtoValidator productDtoValidator;
     @Autowired
-    private ShoppingCartService shoppingCarService;
+
+    private ShoppingCartService shoppingCartService;
+    @Autowired
+    private ShoppingCartRepository shoppingCartRepository;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private UserDetailsServiceImp userDetailsService;
+
+
+
     
+
     @GetMapping("/addProduct")
     public String addProductGet(Model model) {
         ProductDto productDto = new ProductDto();
         model.addAttribute("productDto", productDto);
-
         return "addProduct";
     }
 
     @PostMapping("/addProduct")
     public String addProductPost(@ModelAttribute ProductDto productDto,
-                                 @RequestParam("productImage") MultipartFile productImage,
-                                 BindingResult bindingResult) {
-        productDtoValidator.validate(productDto, bindingResult, productImage);
-        if (bindingResult.hasErrors()) {
-            return "addProduct";
-        }
+                                 @RequestParam("productImage") MultipartFile productImage)
+    {
 
         productService.addProduct(productDto, productImage);
-
-        return "addProduct";
+        System.out.println(productDto);
+        return "redirect:/addProduct";
     }
 
     @GetMapping("/home")
     public String homeGet(Model model) {
-        List<ProductDto> productDto = productService.getAllProductDtos();
-        model.addAttribute("productDtos", productDto);
+        List<ProductDto> productDtos = productService.getAllProductDtos();
+        model.addAttribute("productDtos", productDtos);
         return "home";
     }
 
-    @GetMapping("/product/{productId}")
-    public String viewProductGet(@PathVariable(value = "productId") String productId, Model model) {
+    @GetMapping("/product/{name}/{productId}")
+    public String viewProductGet(Model model,
+                                 @PathVariable(value = "productId") String productId,
+                                 @PathVariable(value = "name") String name)
+    {
         Optional<ProductDto> optionalProductDto = productService.getOptionalProductDtoById(productId);
         if (optionalProductDto.isEmpty()) {
             return "error";
@@ -91,6 +107,18 @@ public class MainController {
 
     }
 
+    @PostMapping("/product/{name}/{productId}")
+    public String viewProductPost(@ModelAttribute SelectedProductDto selectedProductDto,
+                                  @PathVariable(value = "productId") String productId,
+                                  @PathVariable(value = "name") String name,
+                                  Authentication authentication) {
+        System.out.println(selectedProductDto);
+        System.out.println(authentication.getName());
+
+        shoppingCartService.addToCart(selectedProductDto, productId, authentication.getName());
+        return "redirect:/product/" + name + "/" + productId;
+    }
+
     @GetMapping("/registration")
     public String viewRegistrationGet(Model model) {
         RegistrationDto registrationDto = new RegistrationDto();
@@ -100,30 +128,50 @@ public class MainController {
 
     @PostMapping("/registration")
     public String viewRegistrationPost(@ModelAttribute RegistrationDto registrationDto, BindingResult bindingResult) {
-
         registrationDtoValidator.validate(registrationDto, bindingResult);
         if (bindingResult.hasErrors()) {
             return "registration";
         }
-
         registrationService.addRegistration(registrationDto);
-
         return "registration";
+
     }
 
     @GetMapping("/logIn")
-    public String viewLogInGet() {
-        return "logIn";
+    public String viewLoginGet() {
+        return "login";
     }
-
-    @GetMapping("/login")
-    public String viewLoginGet(){return "login";}
 
     @GetMapping("/checkout")
-    public String viewCheckoutGet(Authentication authentication,Model model){
-        shoppingCarService.getShoppingCarDto(authentication.getName());
+    public String viewCheckoutGet(Authentication authentication, Model model) {
+        ShoppingCartDto shoppingCartDto = shoppingCartService.getShoppingCartDto(authentication.getName());
         model.addAttribute("shoppingCartDto", shoppingCartDto);
+        System.out.println(shoppingCartDto);
         return "checkout";
     }
+
+
+    @PostMapping("/confirmation")
+    public String launchOrderPost(Authentication authentication, Model model) {
+
+        orderService.launchOrder(authentication.getName());
+        ShoppingCartDto shoppingCartDto = shoppingCartService.getShoppingCartDto(authentication.getName());
+        model.addAttribute("shoppingCartDto", shoppingCartDto);
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDateTime now = LocalDateTime.now();
+
+        User user = userDetailsService.getCurrentUserConfimation(authentication.getName());
+        model.addAttribute("user", user);
+        model.addAttribute("dtf", dtf);
+        model.addAttribute("now", now);
+        return "confirmation";
+    }
+
+
+
+ 
+
+
 
 }
