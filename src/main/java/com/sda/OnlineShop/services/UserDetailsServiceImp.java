@@ -32,4 +32,13 @@ public class UserDetailsServiceImp implements UserDetailsService {
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), roles);
     }
+    public User getCurrentUserConfimation(String emailAddress) {
+        Optional<User> optionalUser = userRepository.findByEmail(emailAddress);  // search in database the user by e-mail
+
+        if (optionalUser.isEmpty()) {  // if cannot fount the exception is thrown
+            throw new UsernameNotFoundException(emailAddress);
+        }
+        User user = optionalUser.get();
+        return user;
+    }
 }

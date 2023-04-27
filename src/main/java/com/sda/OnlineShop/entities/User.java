@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -18,7 +20,9 @@ public class User {
     private String phoneNumber;
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
     private ShoppingCart shoppingCart;
+    @OneToMany(mappedBy = "user")
+    private List<CustomerOrder> customerOrders;
 
 }
